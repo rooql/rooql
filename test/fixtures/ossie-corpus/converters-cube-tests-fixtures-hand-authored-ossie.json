@@ -1,0 +1,131 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "ecommerce",
+  "description": "Orders and customers",
+  "ai_context": {
+    "instructions": "Use for sales analysis.",
+    "synonyms": [
+      "sales",
+      "purchases"
+    ]
+  },
+  "datasets": [
+    {
+      "name": "orders",
+      "source": "sales.public.orders",
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "order_number"
+        ]
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          },
+          "datatype": "Integer"
+        },
+        {
+          "name": "customer_id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "customer_id"
+              }
+            ]
+          },
+          "datatype": "Integer"
+        },
+        {
+          "name": "ordered_at",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "ordered_at"
+              }
+            ]
+          },
+          "datatype": "Date"
+        }
+      ],
+      "custom_extensions": [
+        {
+          "vendor_name": "SNOWFLAKE",
+          "data": "{\"warehouse\": \"ANALYTICS_WH\"}"
+        }
+      ]
+    },
+    {
+      "name": "customers",
+      "source": "sales.public.customers",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          },
+          "datatype": "Integer"
+        },
+        {
+          "name": "email",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "LOWER(email)"
+              }
+            ]
+          },
+          "datatype": "String"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "orders_to_customers",
+      "from": "orders",
+      "to": "customers",
+      "from_columns": [
+        "customer_id"
+      ],
+      "to_columns": [
+        "id"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "total_revenue",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(orders.amount)"
+          }
+        ]
+      },
+      "description": "Total revenue",
+      "datatype": "Decimal"
+    }
+  ]
+}

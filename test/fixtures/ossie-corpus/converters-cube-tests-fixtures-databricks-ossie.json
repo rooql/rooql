@@ -1,0 +1,123 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "orders",
+  "description": "Sales orders with customer attributes",
+  "datasets": [
+    {
+      "name": "orders",
+      "source": "samples.tpch.orders",
+      "fields": [
+        {
+          "name": "o_orderkey",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "DATABRICKS",
+                "expression": "o_orderkey"
+              }
+            ]
+          },
+          "description": "Order identifier"
+        },
+        {
+          "name": "o_orderdate",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "DATABRICKS",
+                "expression": "o_orderdate"
+              }
+            ]
+          },
+          "label": "Order Date",
+          "ai_context": {
+            "synonyms": [
+              "order date",
+              "date"
+            ]
+          }
+        }
+      ],
+      "unique_keys": [
+        [
+          "o_orderkey"
+        ]
+      ]
+    },
+    {
+      "name": "customer",
+      "source": "samples.tpch.customer",
+      "unique_keys": [
+        [
+          "c_custkey"
+        ]
+      ],
+      "fields": [
+        {
+          "name": "c_name",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "DATABRICKS",
+                "expression": "c_name"
+              }
+            ]
+          },
+          "description": "Customer name"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "orders_to_customer",
+      "from": "orders",
+      "to": "customer",
+      "from_columns": [
+        "o_custkey"
+      ],
+      "to_columns": [
+        "c_custkey"
+      ],
+      "custom_extensions": [
+        {
+          "vendor_name": "DATABRICKS",
+          "data": "{\"_v\": 1, \"rely\": {\"at_most_one_match\": true}}"
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "total_revenue",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "DATABRICKS",
+            "expression": "SUM(o_totalprice)"
+          }
+        ]
+      },
+      "description": "Total order revenue",
+      "ai_context": {
+        "synonyms": [
+          "revenue",
+          "total revenue",
+          "sales"
+        ]
+      }
+    },
+    {
+      "name": "order_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "DATABRICKS",
+            "expression": "COUNT(*)"
+          }
+        ]
+      },
+      "description": "Number of orders"
+    }
+  ]
+}

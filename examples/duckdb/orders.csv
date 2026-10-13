@@ -1,0 +1,17 @@
+order_id,country,channel,status,amount,refund_amount
+1,Italy,web,completed,120.00,0.00
+2,Italy,web,completed,80.50,10.50
+3,Italy,store,completed,45.00,0.00
+4,Italy,web,cancelled,60.00,0.00
+5,Portugal,web,completed,200.00,25.00
+6,Portugal,store,completed,35.25,0.00
+7,Portugal,web,completed,150.00,0.00
+8,Portugal,store,returned,90.00,90.00
+9,Spain,web,completed,75.00,0.00
+10,Spain,web,completed,110.00,20.00
+11,Spain,store,cancelled,40.00,0.00
+12,Spain,store,completed,65.75,0.00
+13,United Kingdom,web,completed,300.00,50.00
+14,United Kingdom,web,completed,55.00,0.00
+15,United Kingdom,store,returned,120.00,120.00
+16,United Kingdom,store,completed,85.00,0.00

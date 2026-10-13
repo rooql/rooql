@@ -1,0 +1,76 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "shop_orders",
+  "description": "A tiny example semantic layer over a table of online and in-store orders.",
+  "datasets": [
+    {
+      "name": "orders",
+      "source": "orders",
+      "primary_key": ["order_id"],
+      "description": "One row per order.",
+      "fields": [
+        {
+          "name": "order_id",
+          "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "order_id" }] },
+          "datatype": "Integer"
+        },
+        {
+          "name": "country",
+          "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "country" }] },
+          "datatype": "String",
+          "description": "Country the order was placed in."
+        },
+        {
+          "name": "channel",
+          "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "channel" }] },
+          "datatype": "String",
+          "description": "Where the order was placed: web or store."
+        },
+        {
+          "name": "status",
+          "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "status" }] },
+          "datatype": "String",
+          "description": "completed, cancelled or returned."
+        },
+        {
+          "name": "amount",
+          "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "amount" }] },
+          "datatype": "Decimal",
+          "description": "Order value in euros."
+        },
+        {
+          "name": "refund_amount",
+          "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "refund_amount" }] },
+          "datatype": "Decimal",
+          "description": "Amount refunded in euros; 0 when nothing was refunded."
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "gross_revenue",
+      "description": "Total order value before refunds.",
+      "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "SUM(orders.amount)" }] },
+      "datatype": "Decimal"
+    },
+    {
+      "name": "refunds",
+      "description": "Total value refunded.",
+      "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "SUM(orders.refund_amount)" }] },
+      "datatype": "Decimal"
+    },
+    {
+      "name": "net_revenue",
+      "description": "Order value minus refunds.",
+      "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "SUM(orders.amount - orders.refund_amount)" }] },
+      "datatype": "Decimal"
+    },
+    {
+      "name": "order_count",
+      "description": "Number of orders.",
+      "expression": { "dialects": [{ "dialect": "OSSIE_SQL_2026", "expression": "COUNT(*)" }] },
+      "datatype": "Integer"
+    }
+  ]
+}

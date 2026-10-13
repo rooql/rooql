@@ -1,0 +1,74 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "revenue_demo",
+  "datasets": [
+    {
+      "name": "orders",
+      "source": "AGENT_DEMO.PUBLIC.ROOQL_ORDERS",
+      "fields": [
+        {
+          "name": "country",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "country"
+              }
+            ]
+          },
+          "datatype": "String"
+        },
+        {
+          "name": "status",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "status"
+              }
+            ]
+          },
+          "datatype": "String"
+        },
+        {
+          "name": "amount",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "amount"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        },
+        {
+          "name": "refund_amount",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "refund_amount"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "revenue",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(orders.amount - orders.refund_amount)"
+          }
+        ]
+      },
+      "datatype": "Decimal"
+    }
+  ]
+}

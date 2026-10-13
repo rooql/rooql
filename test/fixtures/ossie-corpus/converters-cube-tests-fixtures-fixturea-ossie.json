@@ -1,0 +1,283 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "sales",
+  "description": "Sales overview",
+  "ai_context": {
+    "instructions": "Primary view for revenue analysis. Use it for any question about sales, orders, or customer spend.\n"
+  },
+  "relationships": [
+    {
+      "name": "orders_to_users",
+      "from": "orders",
+      "to": "users",
+      "from_columns": [
+        "user_id"
+      ],
+      "to_columns": [
+        "id"
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "name": "orders",
+      "source": "public.orders",
+      "description": "Customer orders",
+      "fields": [
+        {
+          "name": "id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          },
+          "datatype": "Decimal",
+          "dimension": {}
+        },
+        {
+          "name": "user_id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "user_id"
+              }
+            ]
+          },
+          "datatype": "Decimal",
+          "dimension": {}
+        },
+        {
+          "name": "status",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "status"
+              }
+            ]
+          },
+          "datatype": "String",
+          "dimension": {},
+          "label": "Order Status",
+          "description": "Current order status",
+          "ai_context": {
+            "instructions": "Values are pending, shipped, and completed."
+          }
+        },
+        {
+          "name": "created_at",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "created_at"
+              }
+            ]
+          },
+          "datatype": "DateTime",
+          "dimension": {
+            "is_time": true
+          }
+        },
+        {
+          "name": "is_large",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "amount > 500"
+              }
+            ]
+          },
+          "datatype": "Boolean",
+          "dimension": {}
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "users",
+      "source": "SELECT * FROM public.users WHERE deleted_at IS NULL",
+      "fields": [
+        {
+          "name": "id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          },
+          "datatype": "Decimal",
+          "dimension": {}
+        },
+        {
+          "name": "city",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "city"
+              }
+            ]
+          },
+          "datatype": "String",
+          "dimension": {}
+        },
+        {
+          "name": "location_latitude",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "lat"
+              }
+            ]
+          },
+          "datatype": "Float",
+          "dimension": {},
+          "custom_extensions": [
+            {
+              "vendor_name": "CUBE",
+              "data": "{\"_v\": 1, \"geo\": {\"of\": \"location\", \"part\": \"latitude\"}}"
+            }
+          ]
+        },
+        {
+          "name": "location_longitude",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "lon"
+              }
+            ]
+          },
+          "datatype": "Float",
+          "dimension": {},
+          "custom_extensions": [
+            {
+              "vendor_name": "CUBE",
+              "data": "{\"_v\": 1, \"geo\": {\"of\": \"location\", \"part\": \"longitude\"}}"
+            }
+          ]
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "custom_extensions": [
+        {
+          "vendor_name": "CUBE",
+          "data": "{\"_v\": 1, \"cube_extras\": {\"segments\": [{\"name\": \"active\", \"sql\": \"{CUBE}.status = 'active'\"}]}}"
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "orders__count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(DISTINCT orders.id)"
+          }
+        ]
+      },
+      "datatype": "Integer",
+      "custom_extensions": [
+        {
+          "vendor_name": "CUBE",
+          "data": "{\"_v\": 1, \"name\": \"count\"}"
+        }
+      ]
+    },
+    {
+      "name": "total_amount",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(orders.amount)"
+          }
+        ]
+      },
+      "description": "Total order amount",
+      "ai_context": {
+        "instructions": "Use this for revenue questions."
+      },
+      "custom_extensions": [
+        {
+          "vendor_name": "CUBE",
+          "data": "{\"_v\": 1, \"format\": \"currency\"}"
+        }
+      ]
+    },
+    {
+      "name": "completed_amount",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(CASE WHEN (orders.status = 'completed') THEN orders.amount END)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "avg_order_value",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "total_amount / orders__count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "users__count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(DISTINCT users.id)"
+          }
+        ]
+      },
+      "datatype": "Integer",
+      "custom_extensions": [
+        {
+          "vendor_name": "CUBE",
+          "data": "{\"_v\": 1, \"name\": \"count\"}"
+        }
+      ]
+    },
+    {
+      "name": "cities",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(DISTINCT users.city)"
+          }
+        ]
+      },
+      "datatype": "Integer"
+    }
+  ],
+  "custom_extensions": [
+    {
+      "vendor_name": "CUBE",
+      "data": "{\"_v\": 1, \"views\": {\"sales\": {\"name\": \"sales\", \"cubes\": [{\"join_path\": \"orders\", \"includes\": \"*\"}, {\"join_path\": \"orders.users\", \"includes\": [\"city\"]}]}}, \"mapped_view\": \"sales\"}"
+    }
+  ]
+}

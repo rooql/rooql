@@ -1,0 +1,29 @@
+{
+  "name": "rooql",
+  "version": "0.1.0",
+  "description": "A tiny semantic query compiler for Apache Ossie models. Bundle it with your app and compile metric queries to Snowflake, DuckDB or BigQuery SQL.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rooql/rooql.git"
+  },
+  "homepage": "https://rooql.com",
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "build": "node scripts/build.mjs",
+    "example:duckdb": "node examples/duckdb/run.mjs",
+    "example:bigquery": "node examples/bigquery/run.mjs"
+  },
+  "devDependencies": {
+    "@duckdb/node-api": "1.5.6-r.1",
+    "esbuild": "0.25.12"
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "finance_cfo_cockpit",
+  "description": "Bookings and the fiscal calendar.",
+  "ai_context": {
+    "instructions": "Board revenue is recognized bookings. It is not cash collected. The fiscal year starts in February."
+  },
+  "datasets": [
+    {
+      "name": "bookings",
+      "source": "finance.public.bookings",
+      "primary_key": [
+        "booking_id"
+      ],
+      "fields": [
+        {
+          "name": "booking_id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "SNOWFLAKE",
+                "expression": "booking_id"
+              }
+            ]
+          },
+          "datatype": "Integer",
+          "dimension": {
+            "is_time": false
+          }
+        },
+        {
+          "name": "customer_id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "SNOWFLAKE",
+                "expression": "customer_id"
+              }
+            ]
+          },
+          "datatype": "Integer",
+          "dimension": {
+            "is_time": false
+          }
+        },
+        {
+          "name": "close_date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "SNOWFLAKE",
+                "expression": "close_date"
+              }
+            ]
+          },
+          "datatype": "Date",
+          "dimension": {
+            "is_time": true
+          }
+        },
+        {
+          "name": "amount",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "SNOWFLAKE",
+                "expression": "amount"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        }
+      ]
+    },
+    {
+      "name": "fiscal_calendar",
+      "source": "finance.public.fiscal_calendar",
+      "primary_key": [
+        "fiscal_date"
+      ],
+      "fields": [
+        {
+          "name": "fiscal_year",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "SNOWFLAKE",
+                "expression": "fiscal_year"
+              }
+            ]
+          },
+          "datatype": "Integer",
+          "dimension": {
+            "is_time": false
+          }
+        },
+        {
+          "name": "fiscal_quarter",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "SNOWFLAKE",
+                "expression": "fiscal_quarter"
+              }
+            ]
+          },
+          "datatype": "String",
+          "dimension": {
+            "is_time": false
+          }
+        },
+        {
+          "name": "fiscal_date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "SNOWFLAKE",
+                "expression": "fiscal_date"
+              }
+            ]
+          },
+          "datatype": "Date",
+          "dimension": {
+            "is_time": true
+          }
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "bookings_to_fiscal_calendar",
+      "from": "bookings",
+      "to": "fiscal_calendar",
+      "from_columns": [
+        "close_date"
+      ],
+      "to_columns": [
+        "fiscal_date"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "booking_amount",
+      "description": "Sum of booking amount",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "SNOWFLAKE",
+            "expression": "SUM(bookings.amount)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revenue",
+      "description": "Board revenue: recognized bookings. Not cash collected.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "SNOWFLAKE",
+            "expression": "SUM(bookings.amount)"
+          }
+        ]
+      },
+      "ai_context": {
+        "synonyms": [
+          "revenue",
+          "net revenue",
+          "board revenue"
+        ]
+      }
+    }
+  ]
+}

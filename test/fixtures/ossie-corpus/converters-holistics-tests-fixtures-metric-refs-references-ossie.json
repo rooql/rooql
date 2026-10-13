@@ -1,0 +1,210 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "metric_references",
+  "description": "Metrics that name other metrics, across both AML metric homes",
+  "datasets": [
+    {
+      "name": "orders",
+      "source": "`ecommerce`.`orders`",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        },
+        {
+          "name": "user_id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "user_id"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        }
+      ]
+    },
+    {
+      "name": "items",
+      "source": "`ecommerce`.`order_items`",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        },
+        {
+          "name": "order_id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "order_id"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        },
+        {
+          "name": "quantity",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "quantity"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "source": "`ecommerce`.`users`",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          },
+          "datatype": "Decimal"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "items_to_orders",
+      "from": "items",
+      "to": "orders",
+      "from_columns": [
+        "order_id"
+      ],
+      "to_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "orders_to_users",
+      "from": "orders",
+      "to": "users",
+      "from_columns": [
+        "user_id"
+      ],
+      "to_columns": [
+        "id"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "items_quantity",
+      "description": "A plain measure on one model, which the metrics below reference",
+      "datatype": "Decimal",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(items.quantity)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "quantity_plus_one",
+      "description": "A body naming only another metric, so placement follows the reference",
+      "datatype": "Decimal",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "items_quantity + 1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "quantity_per_customer",
+      "description": "A body spanning two datasets, so AML takes it only as AQL",
+      "datatype": "Decimal",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(items.quantity) / COUNT(users.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "half_quantity_per_customer",
+      "description": "An AQL metric naming another AQL metric, which AQL takes by bare name",
+      "datatype": "Decimal",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "quantity_per_customer / 2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "quantity_and_customers",
+      "description": "An AQL metric naming a measure, which AQL takes qualified by its model",
+      "datatype": "Decimal",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "items_quantity + COUNT(users.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "scaled_quantity_per_customer",
+      "description": "A SQL body naming an AQL metric, so the body becomes AQL as well",
+      "datatype": "Decimal",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(items.quantity) * quantity_per_customer"
+          }
+        ]
+      }
+    }
+  ]
+}
